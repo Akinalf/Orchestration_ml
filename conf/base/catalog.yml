@@ -1,9 +1,3 @@
-# Here you can define all your datasets by using simple YAML syntax.
-#
-# Documentation for this file format can be found in "The Data Catalog"
-# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
-
-path:
-  type: str
-  filepath: "data/01_raw/path.txt"
-  description: "Path to the data directory"
+yolo_data_yaml_path:
+  type: text.TextDataset
+  filepath: data/01_raw/gtsrb/archive/data.yaml
