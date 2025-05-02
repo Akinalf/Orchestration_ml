@@ -39,3 +39,6 @@ attr = "orchestration_proj.__version__"
 [tool.setuptools.packages.find]
 where = [ "src",]
 namespaces = false
+
+[tool.kedro_telemetry]
+project_id = "201149515102430ea1271fce3dffb217"
