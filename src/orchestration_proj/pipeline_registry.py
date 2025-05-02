@@ -1,16 +1,26 @@
-"""Project pipelines."""
-from __future__ import annotations
 
-from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
+from orchestration_proj.pipelines import (
+    _01_load_data as load_data,
+    _02_yolo as yolo,
+    _03_OCR as OCR
+)
 
-
-def register_pipelines() -> dict[str, Pipeline]:
+def register_pipelines() -> dict:
     """Register the project's pipelines.
 
     Returns:
-        A mapping from pipeline names to ``Pipeline`` objects.
+        A dictionary mapping pipeline names to their corresponding Pipeline objects.
     """
-    pipelines = find_pipelines()
-    pipelines["__default__"] = sum(pipelines.values())
-    return pipelines
+    
+    load_data_pipeline = load_data.create_pipeline()
+    yolo_pipeline = yolo.create_pipeline()
+    ocr_pipeline = OCR.create_pipeline()
+
+    
+    return {
+        "__default__": load_data_pipeline + yolo_pipeline + ocr_pipeline,
+        "load_data": load_data_pipeline,
+        "yolo": yolo_pipeline,
+        "ocr": ocr_pipeline,
+    }

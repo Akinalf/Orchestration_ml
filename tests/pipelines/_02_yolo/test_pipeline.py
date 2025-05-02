@@ -1,5 +1,5 @@
 """
-This is a boilerplate test file for pipeline '_02_Yolo_pipeline'
+This is a boilerplate test file for pipeline '_02_yolo'
 generated using Kedro 0.19.12.
 Please add your pipeline tests here.
 

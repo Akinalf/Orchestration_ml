@@ -2,3 +2,8 @@
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+
+path:
+  type: str
+  filepath: "data/01_raw/path.txt"
+  description: "Path to the data directory"
