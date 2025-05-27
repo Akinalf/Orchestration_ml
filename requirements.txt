@@ -1,4 +1,11 @@
-ipython>=8.10
-jupyterlab>=3.0
-kedro~=0.19.12
-notebook
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+pytesseract>=0.3.10
+Pillow>=9.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.21.0
+pandas>=1.5.0
+scikit-learn>=1.0.0
+matplotlib>=3.5.0
+seaborn>=0.11.0

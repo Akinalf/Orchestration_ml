@@ -1,3 +1,53 @@
-yolo_data_yaml_path:
-  type: text.TextDataset
-  filepath: data/01_raw/gtsrb/archive/data.yaml
+# Dataset GTSRB formaté YOLO
+gtsrb_data_config:
+  type: kedro_datasets.yaml.YAMLDataset
+  filepath: data/01_raw/gtsrb/data.yaml
+
+# Images préprocessées pour l'inférence
+processed_images:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/02_intermediate/processed_images.pkl
+
+# Résultats de détection YOLO
+detection_results:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/07_model_output/detection_results.pkl
+
+# ROI extraites pour OCR
+extracted_rois:
+  type: kedro_datasets.pickle.PickleDataset
+  filepath: data/07_model_output/extracted_rois.pkl
+
+# Configuration Tesseract
+tesseract_config:
+  type: kedro_datasets.yaml.YAMLDataset
+  filepath: conf/base/tesseract_config.yml
+
+# Métriques d'évaluation
+evaluation_metrics:
+  type: kedro_datasets.json.JSONDataset
+  filepath: data/08_reporting/evaluation_metrics.json
+
+# Rapport final
+final_report:
+  type: kedro_datasets.json.JSONDataset
+  filepath: data/08_reporting/final_report.json
+
+
+#inputs ocr 
+chauzon_image:
+  type: pillow.ImageDataSet
+  filepath: data/01_raw/chauzon.jpg
+
+montepellier_image:
+  type: pillow.ImageDataSet  
+  filepath: data/01_raw/montepellier.jpg
+
+poil_image:
+  type: pillow.ImageDataSet
+  filepath: data/01_raw/poil.jpg
+
+# Output
+ocr_results:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/ocr_results.csv

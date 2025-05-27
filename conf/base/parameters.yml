@@ -1,0 +1,37 @@
+# Configuration du modèle YOLOv8
+yolo:
+  model_path: "data/06_models/model_yolo.pt"
+  confidence_threshold: 0.05
+  iou_threshold: 0.45
+  image_size: 640
+  device: "cpu"  # ou "cuda" si GPU disponible
+
+# Configuration GTSRB
+gtsrb:
+  images_train_path: "data/01_raw/gtsrb/images/train/"
+  images_test_path: "data/01_raw/gtsrb/images/test/"
+  labels_train_path: "data/01_raw/gtsrb/labels/train/"
+  labels_test_path: "data/01_raw/gtsrb/labels/test/"
+  max_images_per_class: 100  # Pour limiter le nombre d'images à traiter
+
+# Configuration OCR
+ocr:
+  language: "eng"  # Panneaux allemands souvent en anglais/chiffres
+  config: "--psm 8 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  min_confidence: 60
+  preprocessing:
+    resize_factor: 2.0
+    gaussian_blur: [5, 5]
+    threshold_type: "adaptive"
+
+# Configuration du preprocessing
+preprocessing:
+  target_size: [640, 640]
+  normalization: true
+  padding_color: [114, 114, 114]
+
+# Configuration de l'évaluation
+evaluation:
+  sample_size: 50  # Nombre d'images à évaluer
+  metrics: ["precision", "recall", "f1", "accuracy"]
+  output_images: true  # Sauvegarder les images avec détections

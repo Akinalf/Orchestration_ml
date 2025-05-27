@@ -1,0 +1,20 @@
+# Configuration Tesseract pour panneaux routiers
+languages: ["eng", "deu"]  # Anglais et Allemand
+psm_mode: 8  # Single word
+oem_mode: 3  # Default OCR Engine Mode
+
+# Caractères autorisés (typiques des panneaux)
+whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
+
+# Preprocessing pour améliorer l'OCR
+preprocessing:
+  resize_factor: 3.0
+  gaussian_blur: [3, 3]
+  morphology:
+    kernel_size: [2, 2]
+    operation: "close"
+  
+# Paramètres de qualité
+min_confidence: 60
+min_text_length: 1
+max_text_length: 20
