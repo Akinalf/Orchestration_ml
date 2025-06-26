@@ -10,3 +10,6 @@ def test_pipeline_registry_has_register_function():
     # Vérifier qu'il y a au moins des attributs dans le module
     attrs = dir(pr)
     assert len(attrs) > 0
+    
+    
+    from src.orchestration_proj.pipelines.yolo_detection.nodes import (
