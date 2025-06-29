@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Panneaux Routiers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0e5ec 0%, #d6dce8 30%, #e8ebf0 70%, #dde1e9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #5a6374;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #e0e5ec;
+            border-radius: 30px;
+            box-shadow: 
+                20px 20px 60px #bebebe,
+                -20px -20px 60px #ffffff;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e0e5ec 0%, #e8ebf0 50%, #d6dce8 100%);
+            padding: 40px;
+            text-align: center;
+            border-radius: 30px 30px 0 0;
+            box-shadow: inset 5px 5px 15px #bebebe, inset -5px -5px 15px #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 40%, 
+                rgba(139, 92, 246, 0.1) 50%, 
+                rgba(59, 130, 246, 0.1) 55%, 
+                transparent 60%);
+            animation: shimmer 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4a5568 0%, #6366f1 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(190, 190, 190, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #718096;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 40px;
+            background: #e0e5ec;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #e0e5ec;
+            border-radius: 25px;
+            padding: 8px;
+            box-shadow: inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 18px 30px;
+            cursor: pointer;
+            background: #e0e5ec;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #718096;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab.active {
+            background: #e0e5ec;
+            color: #4a5568;
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .tab:hover:not(.active) {
+            color: #4a5568;
+            transform: translateY(-1px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .upload-section {
+            background: #e0e5ec;
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 
+                15px 15px 30px #bebebe,
+                -15px -15px 30px #ffffff;
+        }
+
+        .upload-section:hover {
+            box-shadow: 
+                20px 20px 40px #bebebe,
+                -20px -20px 40px #ffffff;
+            transform: translateY(-3px);
+        }
+
+        .upload-section h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+
+        .upload-section p {
+            color: #718096;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 15px;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            background: #e0e5ec;
+            color: #4a5568;
+            padding: 16px 32px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 15px;
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                12px 12px 20px #bebebe,
+                -12px -12px 20px #ffffff;
+            color: #2d3748;
+        }
+
+        .file-input-label:active {
+            transform: translateY(0);
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+        }
+
+        .upload-btn {
+            background: #e0e5ec;
+            color: #4a5568;
+            border: none;
+            padding: 16px 35px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff;
+        }
+
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 
+                12px 12px 20px #bebebe,
+                -12px -12px 20px #ffffff,
+                0 0 20px rgba(99, 102, 241, 0.3);
+            color: #2d3748;
+        }
+
+        .upload-btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+        }
+
+        .upload-btn:disabled {
+            color: #a0aec0;
+            cursor: not-allowed;
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        .result-image {
+            max-width: 100%;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 
+                15px 15px 30px #bebebe,
+                -15px -15px 30px #ffffff;
+        }
+
+        .detections-list {
+            background: #e0e5ec;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff;
+        }
+
+        .detections-list h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .detection-item {
+            background: #e0e5ec;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff;
+        }
+
+        .detection-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                12px 12px 20px #bebebe,
+                -12px -12px 20px #ffffff;
+        }
+
+        .detection-text {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .detection-confidence {
+            color: #718096;
+            font-size: 0.95em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            background: #e0e5ec;
+            border-radius: 20px;
+            box-shadow: inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            background: #e0e5ec;
+            position: relative;
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+            animation: spin 2s linear infinite;
+        }
+
+        .spinner::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border-radius: 50%;
+            background: #e0e5ec;
+            box-shadow: 
+                4px 4px 8px #bebebe,
+                -4px -4px 8px #ffffff;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #718096;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .error {
+            background: #e0e5ec;
+            color: #e53e3e;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: 500;
+            box-shadow: inset 4px 4px 8px #d1d1d1, inset -4px -4px 8px #ffffff;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .success {
+            background: #e0e5ec;
+            color: #38a169;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: 500;
+            box-shadow: inset 4px 4px 8px #d1d1d1, inset -4px -4px 8px #ffffff;
+            border-left: 4px solid #38a169;
+        }
+
+        .download-link {
+            display: inline-block;
+            background: #e0e5ec;
+            color: #4a5568;
+            padding: 16px 30px;
+            text-decoration: none;
+            border-radius: 20px;
+            margin: 15px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff;
+        }
+
+        .download-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                12px 12px 20px #bebebe,
+                -12px -12px 20px #ffffff;
+            color: #2d3748;
+        }
+
+        .download-link:active {
+            transform: translateY(0);
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+        }
+
+        /* Animations douces */
+        .container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Amélioration mobile */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .upload-section {
+                padding: 25px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e0e5ec;
+            border-radius: 10px;
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e0e5ec;
+            border-radius: 10px;
+            box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚦 OCR Panneaux Routiers</h1>
+            <p>Détection et reconnaissance de texte sur images et vidéos</p>
+        </div>
+
+        <div class="content">
+            <!-- Section Image uniquement -->
+            <div class="upload-section">
+                <h3>📸 Upload d'Image</h3>
+                <p>Sélectionnez une image contenant des panneaux routiers</p>
+                
+                <div class="file-input-wrapper">
+                    <input type="file" id="imageFile" class="file-input" accept="image/*">
+                    <label for="imageFile" class="file-input-label">
+                        📁 Choisir une image
+                    </label>
+                </div>
+                
+                <br>
+                <button onclick="uploadImage()" class="upload-btn" id="imageUploadBtn" disabled>
+                    🚀 Analyser l'image
+                </button>
+            </div>
+
+            <div id="imageResults" class="results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des fichiers images
+        document.getElementById('imageFile').addEventListener('change', function() {
+            const btn = document.getElementById('imageUploadBtn');
+            btn.disabled = !this.files.length;
+        });
+
+        // Upload d'image
+        function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Veuillez sélectionner une image');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const resultsDiv = document.getElementById('imageResults');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyse de l'image en cours...</p>
+                </div>
+            `;
+
+            fetch('/upload_image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayImageResults(data);
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+            });
+        }
+
+        // Affichage des résultats d'image
+        function displayImageResults(data) {
+            const resultsDiv = document.getElementById('imageResults');
+            
+            let html = `
+                <div class="success">
+                    ✅ Image analysée avec succès ! ${data.total_detections} détection(s) trouvée(s).
+                </div>
+                
+                <img src="${data.annotated_image}" alt="Image annotée" class="result-image">
+            `;
+
+            if (data.detections.length > 0) {
+                html += `
+                    <div class="detections-list">
+                        <h3>🎯 Détections trouvées:</h3>
+                `;
+                
+                data.detections.forEach((detection, index) => {
+                    html += `
+                        <div class="detection-item">
+                            <div class="detection-text">📝 "${detection.text}"</div>
+                            <div class="detection-confidence">🎯 Confiance: ${detection.confidence}%</div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
